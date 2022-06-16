@@ -1,6 +1,7 @@
 extends KinematicBody2D
 
 onready var animated_sprite = $animated_sprite
+onready var velocity_label = $ui/CanvasLayer/velocity_label
 var vel = Vector2.ZERO
 export var move_speed = 60
 export var grav = 5
@@ -22,13 +23,20 @@ func _process(delta):
 	vel = move_and_slide(vel, Vector2.UP)
 	update_animation()
 	update_facing()
+	
+	velocity_label.text = 'vel' + String(vel)
 
 func update_animation():
-	if (vel.x != 0):
-		animated_sprite.play("run")
+	if (is_on_floor()):
+		if (vel.x != 0):
+			animated_sprite.play("run")
+		else:
+			animated_sprite.play("idle")
 	else:
-		animated_sprite.play("idle")
-		
+		if (vel.y < 0):
+			animated_sprite.play("jump")
+		else:
+			animated_sprite.play("fall")
 func update_facing():
 	if (vel.x != 0):
 		animated_sprite.flip_h = vel.x < 0
